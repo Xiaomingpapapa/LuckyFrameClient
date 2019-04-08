@@ -42,6 +42,7 @@ import luckyclient.publicclass.LogUtil;
  */
 public class TestCaseExecution {
     protected static final String ASSIGNMENT_SIGN = "$=";
+    protected static final String SUBSTRING_SIGN = "[";
     protected static final String FUZZY_MATCHING_SIGN = "%=";
     protected static final String REGULAR_MATCHING_SIGN = "~=";
     protected static final String ASSIGNMENT_GLOBALSIGN = "$A=";

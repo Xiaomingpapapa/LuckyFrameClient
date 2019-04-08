@@ -11,6 +11,7 @@ import luckyclient.dblog.LogOperation;
 import luckyclient.planapi.entity.ProjectCase;
 import luckyclient.planapi.entity.ProjectCasesteps;
 import luckyclient.planapi.entity.PublicCaseParams;
+import luckyclient.publicclass.DyMethodUtil;
 import luckyclient.publicclass.LogUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -233,17 +234,65 @@ public class WebCaseExecution extends TestCaseExecution {
             if (null != expect && !expect.isEmpty()) {
                 luckyclient.publicclass.LogUtil.APP.info("期望结果为【" + expect + "】");
                 // 赋值传参模式
+                String valueName = "";
+                String subResult = "";
+                String expectValueStr = expect.substring(ASSIGNMENT_SIGN.length());
+                if (expectValueStr.contains(SUBSTRING_SIGN)) {
+                    //结果分割
+                    valueName = expectValueStr.substring(0, expectValueStr.indexOf("["));
+                    String codeStr = expectValueStr.substring(expectValueStr.indexOf("[") + 1, expectValueStr.length() - 1);
+                    Map<String, Object> codeParamMap = new HashMap<>(10);
+                    codeParamMap.put("result", result);
+                    String[] codeStrArr = codeStr.split(";");
+                    String methodName = codeStrArr[0];
+                    StringBuilder codeBuilder = new StringBuilder();
+                    switch (methodName) {
+                        //调用格式为 $=value[split;&;1]
+                        case "split": {
+                            codeBuilder.append("result.");
+                            codeBuilder.append(codeStrArr[0]);
+                            codeBuilder.append("(\"");
+                            codeBuilder.append(codeStrArr[1]);
+                            codeBuilder.append("\")");
+                            String[] subResultArr = (String[]) DyMethodUtil.invokeMethod(codeBuilder.toString(), codeParamMap);
+                            try {
+                                subResult = subResultArr[Integer.parseInt(codeStrArr[2])];
+                            } catch (ArrayIndexOutOfBoundsException e) {
+                                luckyclient.publicclass.LogUtil.APP.error(e);
+                            }
+                            break;
+                        }
+                        //调用格式为 $=value[subString;0;1]
+                        case "substring": {
+                            codeBuilder.append("result.");
+                            codeBuilder.append(codeStrArr[0]);
+                            codeBuilder.append("(");
+                            //设置起始切割位置
+                            codeBuilder.append(codeStrArr[1]);
+                            codeBuilder.append(",");
+                            //设置结束切割位置
+                            codeBuilder.append(codeStrArr[2]);
+                            codeBuilder.append(")");
+                            subResult = (String)DyMethodUtil.invokeMethod(codeBuilder.toString(), codeParamMap);
+                            break;
+                        }
+                    }
+                } else {
+                    //常规赋值
+                    valueName = expect.substring(ASSIGNMENT_SIGN.length());
+                    subResult = result;
+                }
                 if (expect.length() > ASSIGNMENT_SIGN.length() && expect.startsWith(ASSIGNMENT_SIGN)) {
-                    variable.put(expect.substring(ASSIGNMENT_SIGN.length()), result);
-                    luckyclient.publicclass.LogUtil.APP.info("用例：" + testcase.getSign() + " 第" + step.getStepnum() + "步，将测试结果【" + result + "】赋值给变量【" + expect.substring(ASSIGNMENT_SIGN.length()) + "】");
-                    caselog.caseLogDetail(taskid, testcase.getSign(), "将测试结果【" + result + "】赋值给变量【" + expect.substring(ASSIGNMENT_SIGN.length()) + "】", "info", String.valueOf(step.getStepnum()), "");
+                    variable.put(valueName, subResult);
+                    luckyclient.publicclass.LogUtil.APP.info("用例：" + testcase.getSign() + " 第" + step.getStepnum() + "步，将测试结果【" + subResult + "】赋值给变量【" + valueName + "】");
+                    caselog.caseLogDetail(taskid, testcase.getSign(), "将测试结果【" + subResult + "】赋值给变量【" + valueName + "】", "info", String.valueOf(step.getStepnum()), "");
                 }
                 // 赋值全局变量
                 else if (expect.length() > ASSIGNMENT_GLOBALSIGN.length() && expect.startsWith(ASSIGNMENT_GLOBALSIGN)) {
-                	variable.put(expect.substring(ASSIGNMENT_GLOBALSIGN.length()), result);
+                	variable.put(valueName, subResult);
                 	ParamsManageForSteps.GLOBAL_VARIABLE.put(expect.substring(ASSIGNMENT_GLOBALSIGN.length()), result);
-                    luckyclient.publicclass.LogUtil.APP.info("用例：" + testcase.getSign() + " 第" + step.getStepnum() + "步，将测试结果【" + result + "】赋值给全局变量【" + expect.substring(ASSIGNMENT_GLOBALSIGN.length()) + "】");
-                    caselog.caseLogDetail(taskid, testcase.getSign(), "将测试结果【" + result + "】赋值给全局变量【" + expect.substring(ASSIGNMENT_GLOBALSIGN.length()) + "】", "info", String.valueOf(step.getStepnum()), "");
+                    luckyclient.publicclass.LogUtil.APP.info("用例：" + testcase.getSign() + " 第" + step.getStepnum() + "步，将测试结果【" + subResult + "】赋值给全局变量【" + valueName + "】");
+                    caselog.caseLogDetail(taskid, testcase.getSign(), "将测试结果【" + subResult + "】赋值给全局变量【" + valueName + "】", "info", String.valueOf(step.getStepnum()), "");
                 }
                 // WebUI检查模式
                 else if (1 == step.getSteptype() && params.get("checkproperty") != null && params.get("checkproperty_value") != null) {

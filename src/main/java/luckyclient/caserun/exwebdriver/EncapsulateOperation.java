@@ -231,7 +231,11 @@ public class EncapsulateOperation {
                 luckyclient.publicclass.LogUtil.APP.info(result);
                 break;
             case "sendkeys":
-                we.sendKeys(operationValue);
+                if (operationValue.equals("empty")) {
+                    we.sendKeys("");
+                } else {
+                    we.sendKeys(operationValue);
+                }
                 result = "sendKeys对象输入...【对象定位属性:" + property + "; 定位属性值:" + propertyValue + "; 操作值:" + operationValue + "】";
                 luckyclient.publicclass.LogUtil.APP.info(result);
                 break;
