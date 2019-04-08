@@ -11,11 +11,11 @@ import java.util.Date;
  * 这是一个受限制的自由软件！您不能在任何未经允许的前提下对程序代码进行修改和用于商业用途；也不允许对程序代码修改后以任何形式任何目的的再发布。
  * 为了尊重作者的劳动成果，LuckyFrame关键版权信息严禁篡改 有任何疑问欢迎联系作者讨论。 QQ:1573584944 seagull1985
  * =================================================================
- * 
+ *
  * @ClassName: LogOperation
  * @Description: 日志写入数据库 @author： seagull
  * @date 2015年4月15日 上午9:29:40
- * 
+ *
  */
 public class LogOperation {
 	public static DBOperation dbt = DbLink.dbLogLink();
@@ -69,7 +69,7 @@ public class LogOperation {
 	 * 插入用例执行日志
 	 */
 	public void caseLogDetail(String taskid, String caseno, String detail, String loggrade, String step,
-			String imgname) {
+							  String imgname) {
 		if (0 == exetype) {
 			if (detail.indexOf("'") > -1) {
 				detail = detail.replaceAll("'", "''");
@@ -91,9 +91,9 @@ public class LogOperation {
 				// 设置日期格式
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				if (detail.length()>5000) {
-					 luckyclient.publicclass.LogUtil.APP.info("日志明细超过5000字符，无法进入数据库存储，进行日志明细打印...");
-					 luckyclient.publicclass.LogUtil.APP.info("用例【"+caseno+"】第"+step+"步，日志级别"+loggrade+",日志明细【"+detail+"】...");
-					 detail="日志明细超过5000字符无法存入数据库，已在LOG4J日志中打印，请前往查看...";
+					luckyclient.publicclass.LogUtil.APP.info("日志明细超过5000字符，无法进入数据库存储，进行日志明细打印...");
+					luckyclient.publicclass.LogUtil.APP.info("用例【"+caseno+"】第"+step+"步，日志级别"+loggrade+",日志明细【"+detail+"】...");
+					detail="日志明细超过5000字符无法存入数据库，已在LOG4J日志中打印，请前往查看...";
 				}
 				String sql = "Insert into test_logdetail(LOGTIME,TASKID,CASEID,DETAIL,LOGGRADE,STEP,IMGNAME)  "
 						+ "Values (str_to_date('" + df.format(new Date()) + "','%Y-%m-%d %T')," + taskidtoint + ","
@@ -180,6 +180,36 @@ public class LogOperation {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * 更新本次任务的单条用例执行日志
+	 */
+	public static void updateCaseLogDetail(String caseno, String taskid, String detail, String loggrade, String step) {
+		try {
+			if (detail.indexOf("'") > -1) {
+				detail = detail.replaceAll("'", "''");
+			}
+			int inttaskid = Integer.parseInt(taskid);
+			String casesidsql;
+			casesidsql = dbt.executeQuery(
+					"select id from TEST_CASEDETAIL t where caseno = '" + caseno + "' and taskid = " + inttaskid);
+			int casesid = Integer.parseInt(casesidsql.substring(0, casesidsql.indexOf("%")));
+
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String sql = "Insert into test_logDetail(LOGTIME,TASKID,CASEID,DETAIL,LOGGRADE,STEP,IMGNAME)  "
+					+ "Values (str_to_date('" + df.format(new Date()) + "','%Y-%m-%d %T')," + inttaskid + "," + casesid
+					+ ",'" + detail + "','" + loggrade + "','" + step + "','')";
+
+			String re = dbt.executeSql(sql);
+			if (re.indexOf("成功") < 0) {
+				throw new Exception("更新用例：" + caseno + "步骤" + step + "日志到数据库中出现异常！！！");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -389,16 +419,16 @@ public class LogOperation {
 			String finishtime = sql.substring(sql.indexOf("%") + 1, sql.length() - 1);
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date start = df.parse(starttime);
-            if (StringUtils.isNotBlank(finishtime) && !StringUtils.equalsIgnoreCase(finishtime, "null")) {
-                Date finish = df.parse(finishtime);
-                long l = finish.getTime() - start.getTime();
-                long day = l / (24 * 60 * 60 * 1000);
-                long hour = (l / (60 * 60 * 1000) - day * 24);
-                long min = ((l / (60 * 1000)) - day * 24 * 60 - hour * 60);
-                long s = (l / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
-                desTime = "<font color='#2828FF'>" + hour + "</font>小时<font color='#2828FF'>" + min
-                        + "</font>分<font color='#2828FF'>" + s + "</font>秒";
-            }
+			if (StringUtils.isNotBlank(finishtime) && !StringUtils.equalsIgnoreCase(finishtime, "null")) {
+				Date finish = df.parse(finishtime);
+				long l = finish.getTime() - start.getTime();
+				long day = l / (24 * 60 * 60 * 1000);
+				long hour = (l / (60 * 60 * 1000) - day * 24);
+				long min = ((l / (60 * 1000)) - day * 24 * 60 - hour * 60);
+				long s = (l / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
+				desTime = "<font color='#2828FF'>" + hour + "</font>小时<font color='#2828FF'>" + min
+						+ "</font>分<font color='#2828FF'>" + s + "</font>秒";
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			luckyclient.publicclass.LogUtil.APP.error("执行获取任务测试时长SQL出现异常，请确认数据库链接是否正常！", e);
@@ -486,12 +516,207 @@ public class LogOperation {
 			sqlresult = sqlresult.substring(sqlresult.indexOf("预期结果：") + 5, sqlresult.lastIndexOf("测试结果：") - 1);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			luckyclient.publicclass.LogUtil.APP.error("执行查询任务中用例步骤日志预期结果 SQL出现异常，请确认数据库链接是否正常！", e);
 			e.printStackTrace();
 			return sqlresult;
 		}
 		return sqlresult;
 	}
+
+	/**======================  新增代码  开始====================*/
+	/*
+	 * 插入任务执行   新增代码
+	 * casestatus   pass:0    fail:1   lock:2   unexecute:4
+	 */
+	public static void AddTaskExcute(String tastName,int jobId,String taskId){
+		if(0 == exetype){
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  //设置日期格式
+			String sql2 = "select id from test_taskexcute where id = "+taskId;
+			try {
+				String query =  dbt.executeQuery(sql2);
+				if(query != null && query.contains("%")){
+					String sql = "update test_taskexcute set tastName = "+tastName+" where id = "+taskId;
+					try {
+						dbt.executeSql(sql);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					return;
+				}
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+
+			String sql = "Insert into test_taskexcute(ID,TASKID,JOBID,CREATETIME,TASKSTATUS) Values ("+taskId+",'"+tastName+"',"+jobId+","
+					+ "str_to_date('"+df.format(new Date())+"','%Y-%m-%d %T'),'1')";
+			try {
+				dbt.executeSql(sql);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	/*
+	 * 更新任务名称
+	 * casestatus   pass:0    fail:1   lock:2   unexecute:4
+	 */
+	public static void UpdateTaskExcute(String taskName,String taskId){
+		if(0 == exetype){
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  //设置日期格式
+			String sql2 = "select id from test_taskexcute where id = "+taskId;
+			try {
+				String query =  dbt.executeQuery(sql2);
+				if(query != null && query.contains("%")){
+					String sql = "update test_taskexcute set taskid = '"+taskName+"' where id = "+taskId;
+					try {
+						dbt.executeSql(sql);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					return;
+				}
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+
+	/*
+	 * 插入用例执行状态
+	 * casestatus   pass:0    fail:1   lock:2   unexecute:4
+	 */
+	public static int AddCaseDetailReturnId(String taskid,String caseno,String caseversion,String casename,Integer casestatus){
+		if(0 == exetype){
+			int taskidtoint = Integer.parseInt(taskid);
+			casename = casename.replace("'", "''");
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  //设置日期格式
+			String sql = "Insert into test_casedetail(TASKID,CASENO,CASEVERSION,CASETIME,"
+					+ "CASENAME,CASESTATUS) Values ("+taskidtoint+",'"+caseno+"','"+caseversion+"',"
+					+ "str_to_date('"+df.format(new Date())+"','%Y-%m-%d %T'),'"+casename+"','"+casestatus+"')";
+			try {
+				return dbt.executeInsertSql(sql);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return -1;
+	}
+
+	/*
+	 * 更新用例执行状态
+	 * casestatus   pass:0    fail:1   lock:2   unexecute:4
+	 */
+	public static void UpdateCaseDetail(String id,Integer casestatus,String imgname){
+		if(0 == exetype){
+			int idtoint = Integer.parseInt(id);
+			StringBuilder builder = new StringBuilder();
+			builder.append("update test_casedetail set ");
+
+			if(imgname != null && !"".equals(imgname)){
+				if(!builder.toString().endsWith("set ")){
+					builder.append(", ");
+				}
+				builder.append("imgname = '").append(imgname).append("'");
+			}
+
+			if(casestatus != null && !"".equals(casestatus)){
+				if(!builder.toString().endsWith("set ")){
+					builder.append(", ");
+				}
+				builder.append("casestatus = '").append(casestatus).append("'");
+			}
+			builder.append(" where id = ").append(idtoint);
+			try {
+				dbt.executeSql(builder.toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	/*
+	 * 插入用例执行日志
+	 */
+	public static void CaseLogDetail2(String caseid,String taskId,String detail,String loggrade,String step,String imgname)  {
+		if(0 == exetype){
+			if(detail.indexOf("'")>-1){
+				detail = detail.replaceAll("'", "''");
+			}
+			int caseidtoint = Integer.parseInt(caseid);
+			String sqlresult = null;
+			try {
+				sqlresult = dbt.executeQuery("select id from test_casedetail where id = "+caseidtoint);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			if (!"".equals(sqlresult) && null != sqlresult) {
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // 设置日期格式
+				String sql = "Insert into test_logDetail(LOGTIME,TASKID,CASEID,DETAIL,LOGGRADE,STEP,IMGNAME)  "
+						+ "Values (str_to_date('" + df.format(new Date())
+						+ "','%Y-%m-%d %T')," + taskId + "," + caseid + ",'" + detail + "','" + loggrade
+						+ "','" + step + "','"+ imgname +"')";
+				try {
+					String re=dbt.executeSql(sql);
+					if(re.indexOf("成功")<0){
+						throw new Exception("更新用例id："+caseid+"步骤"+step+"日志到数据库中出现异常！！！");
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+		}
+	}
+	/**
+	 *更新本次任务的执行统计情况
+	 *taskStatus 状态 0未执行 1执行中 2 成功 4失败
+	 */
+	public static int[] updateTastdetail(String taskid,int casecount,int taskStatus){
+		int[] taskcount = null;
+		if(0 == exetype){
+			try {
+				int id = Integer.parseInt(taskid);
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  //设置日期格式
+
+				String casesucsql = dbt.executeQuery("select count(*) from test_casedetail where taskid = "+id+" and casestatus = 0");
+				String casefailsql = dbt.executeQuery("select count(*) from test_casedetail where taskid = "+id+" and casestatus = 1");
+				String caselocksql = dbt.executeQuery("select count(*) from test_casedetail where taskid = "+id+" and casestatus = 2");
+				String casenoexesql = dbt.executeQuery("select count(*) from test_casedetail where taskid = "+id+" and casestatus = 4");
+
+
+				int casesuc =  Integer.parseInt(casesucsql.substring(0, casesucsql.indexOf("%")));
+				int casefail =  Integer.parseInt(casefailsql.substring(0, casefailsql.indexOf("%")));
+				int caselock =  Integer.parseInt(caselocksql.substring(0, caselocksql.indexOf("%")));
+				int casenoexec =  Integer.parseInt(casenoexesql.substring(0, casenoexesql.indexOf("%")));
+
+				if(casecount==0){
+					casecount = casesuc+casefail+caselock+casenoexec;
+				}
+
+				taskcount = new int[5];       //返回本次任务执行情况
+				taskcount[0] = casecount;
+				taskcount[1] = casesuc;
+				taskcount[2] = casefail;
+				taskcount[3] = caselock;
+				taskcount[4] = casenoexec;
+				String sql = "update test_TaskExcute set casetotal_count = "+casecount+",casesucc_count = "+casesuc+",casefail_count = "+casefail
+						+",caselock_count = "+caselock+",casenoexec_count = "+casenoexec+",finishtime =  str_to_date('"+df.format(new Date())+"','%Y-%m-%d %T'), "
+						+ "taskStatus  = "+taskStatus+" where id = "+id;
+				dbt.executeSql(sql);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return taskcount;
+	}
+
+	/**======================  新增代码  结束====================*/
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub

@@ -1,7 +1,9 @@
 package luckyclient.caserun;
 
 import java.io.File;
+import java.util.Properties;
 
+import luckyclient.publicclass.LogUtil;
 import org.apache.log4j.PropertyConfigurator;
 
 import luckyclient.caserun.exappium.AppTestControl;
@@ -25,19 +27,51 @@ public class RunAutomationTest extends TestControl {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try {
-			PropertyConfigurator.configure(System.getProperty("user.dir") + File.separator + "log4j.conf");
+//            PropertyConfigurator.configure(System.getProperty("user.dir") + "\\log4j.properties");
+            Properties properties= luckyclient.publicclass.SysConfig.getConfiguration();
 			String taskid = args[0];
 			TestTaskexcute task = GetServerAPI.cgetTaskbyid(Integer.valueOf(taskid));
 
-			if (task.getTestJob().getExtype() == 0) {
-				// Ω”ø⁄≤‚ ‘
-				TestControl.taskExecutionPlan(taskid, task);
-			} else if (task.getTestJob().getExtype() == 1) {
-				// UI≤‚ ‘
-				WebTestControl.taskExecutionPlan(taskid, task);
-			} else if (task.getTestJob().getExtype() == 2) {
-				AppTestControl.taskExecutionPlan(taskid, task);
-			}
+            int taskType = task.getTestJob().getExtype();
+            switch (taskType) {
+                case 0:
+                    TestControl.taskExecutionPlan(taskid, task);
+                    break;
+                case 1:
+                    WebTestControl.taskExecutionPlan(taskid, task);
+                    break;
+                case 2:
+                    AppTestControl.taskExecutionPlan(taskid, task);
+                    break;
+                case 3:
+                    try {
+                        Class  clzz = Class.forName(properties.getProperty("CustomControlFactory"));
+                        CustomControlFactory factory = (CustomControlFactory) clzz.newInstance();
+                        if(factory == null) {
+                            LogUtil.ERROR.error("factory not exitsts!");
+                            return;
+                        }
+                        factory.runControl(task);
+                    } catch (ClassNotFoundException e) {
+                        LogUtil.ERROR.error(e);
+                    }
+                    break;
+                case 4:
+                    try {
+                        Class  clzz = Class.forName(properties.getProperty("CustomScriptFactory"));
+                        CustomControlFactory factory = (CustomControlFactory) clzz.newInstance();
+                        if(factory == null) {
+                            LogUtil.ERROR.error("factory not exitsts!");
+                            return;
+                        }
+                        factory.runControl(task);
+                    } catch (ClassNotFoundException e) {
+                        LogUtil.ERROR.error(e);
+                    }
+                    break;
+                default:
+                    break;
+            }
 	 		System.exit(0);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

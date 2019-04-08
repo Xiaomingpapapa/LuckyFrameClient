@@ -6,7 +6,9 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 
 /**
  * =================================================================
@@ -17,7 +19,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author seagull
  * @date 2018年7月27日 上午10:16:40
  */
-@SpringBootApplication
+@SpringBootApplication()
 public class RunService {
 
 	public static void main(String[] args) {

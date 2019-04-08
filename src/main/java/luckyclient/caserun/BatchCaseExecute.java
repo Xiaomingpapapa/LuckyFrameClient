@@ -31,7 +31,7 @@ public class BatchCaseExecute extends TestControl {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try {
-			PropertyConfigurator.configure(System.getProperty("user.dir") + File.separator + "log4j.conf");
+			PropertyConfigurator.configure(System.getProperty("user.dir") + File.separator + "log4j.properties");
 			String taskid = args[0];
 			String batchcase = args[1];
 			TestTaskexcute task = GetServerAPI.cgetTaskbyid(Integer.valueOf(taskid));

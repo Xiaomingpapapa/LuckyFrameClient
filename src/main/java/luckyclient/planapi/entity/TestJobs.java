@@ -6,10 +6,10 @@ package luckyclient.planapi.entity;
  * 为了尊重作者的劳动成果，LuckyFrame关键版权信息严禁篡改
  * 有任何疑问欢迎联系作者讨论。 QQ:1573584944  seagull1985
  * =================================================================
- * 
+ *
  * @author： seagull
  * @date 2017年12月1日 上午9:29:40
- * 
+ *
  */
 public class TestJobs implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
@@ -21,7 +21,7 @@ public class TestJobs implements java.io.Serializable {
 	private String endTime;
 	private String runTime;
 	private String remark;
-	
+
 	private String planproj;
 	private String state;
 	private String state_str;
@@ -62,39 +62,41 @@ public class TestJobs implements java.io.Serializable {
 	/**
 	 * 0:接口自动化  1:WebDriver自动化
 	 */
-	private int extype;   
+	private int extype;
 	/**
 	 * 0:ie  1:火狐  2:谷歌   3：Edge
 	 */
-	private Integer browsertype;  
+	private Integer browsertype;
 	/**
 	 * 任务超时时间 单位：分钟
 	 */
-	private Integer timeout;  
+	private Integer timeout;
 	/**
 	 * 客户端IP
 	 */
-	private String clientip; 
+	private String clientip;
 	/**
 	 * 项目类型 0testlink 1系统内项目
 	 */
-	private Integer projecttype;  
+	private Integer projecttype;
 	/**
 	 * 系统内项目ID
 	 */
-	private Integer projectid;  
+	private Integer projectid;
 	/**
 	 * 系统内项目关联计划ID
 	 */
-	private Integer planid;  
+	private Integer planid;
 	private String taskType;
 	private String startTimestr;
 	private String endTimestr;
 	private String createTime;
 	private String noEndDate;
-    // 发送条件
-    private Integer sendCondition;
-	
+	// 发送条件
+	private Integer sendCondition;
+	//============新增字段============
+	private String testngFile;
+
 	public Integer getProjecttype() {
 		return projecttype;
 	}
@@ -240,11 +242,11 @@ public class TestJobs implements java.io.Serializable {
 	}
 
 	private boolean showRun = true;
-	
+
 	public TestJobs() {
 	}
 
-	
+
 	public int getId() {
 		return id;
 	}
@@ -275,7 +277,7 @@ public class TestJobs implements java.io.Serializable {
 		this.startDate = startDate;
 	}
 
-	
+
 	/**
 	 * 开始时间的时间格式应为：HH:mm:ss
 	 */
@@ -382,12 +384,19 @@ public class TestJobs implements java.io.Serializable {
 	public void setShowRun(boolean showRun) {
 		this.showRun = showRun;
 	}
+	public final String getTestngFile() {
+		return testngFile;
+	}
 
-    public Integer getSendCondition() {
-        return sendCondition;
-    }
+	public final void setTestngFile(String testngFile) {
+		this.testngFile = testngFile;
+	}
 
-    public void setSendCondition(Integer sendCondition) {
-        this.sendCondition = sendCondition;
-    }
+	public Integer getSendCondition() {
+		return sendCondition;
+	}
+
+	public void setSendCondition(Integer sendCondition) {
+		this.sendCondition = sendCondition;
+	}
 }

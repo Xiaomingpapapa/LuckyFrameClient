@@ -30,7 +30,7 @@ public class OneCaseExecute extends TestControl {
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		PropertyConfigurator.configure(System.getProperty("user.dir")+ File.separator +"log4j.conf");
+		PropertyConfigurator.configure(System.getProperty("user.dir")+ File.separator + "log4j.properties");
 		String taskid = args[0];
 		String testCaseExternalId = args[1];
 		int version = Integer.parseInt(args[2]);

@@ -45,8 +45,11 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -1728,6 +1731,68 @@ public class HttpClientHelper {
     	}
     	return httpclient;
     }
+
+	/**
+	 * 28476add
+	 * httpclient 上传文件
+	 * @param url
+	 * @param file
+	 * @param filename
+	 * @param params
+	 * @param charset
+	 * @return
+	 */
+	public static String httpClientPostFile(String url, File file, String filename, Map<String, Object> params,
+											String charset) {
+		StringBuffer resultBuffer = null;
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+
+		HttpPost httppost = new HttpPost(url);
+		FileBody bin = new FileBody(file);
+		StringBody comment = new StringBody(filename, ContentType.TEXT_PLAIN);
+
+		MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create()
+				.addPart("imageFile", bin)
+				.addPart("filename", comment);
+		if (params.size() > 0) {
+			// ???ò???
+			for (Map.Entry<String, Object> m : params.entrySet()) {
+				multipartEntityBuilder.addPart(m.getKey(),
+						new StringBody(m.getValue().toString(), ContentType.TEXT_PLAIN));
+			}
+		}
+		HttpEntity reqEntity = multipartEntityBuilder.build();
+		httppost.setEntity(reqEntity);
+		BufferedReader br = null;
+		try {
+			CloseableHttpResponse response = httpclient.execute(httppost);
+			// ????????????????
+			resultBuffer = new StringBuffer();
+			br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), charset));
+			String temp;
+			while ((temp = br.readLine()) != null) {
+				resultBuffer.append(temp);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					br = null;
+					throw new RuntimeException(e);
+				}
+			}
+			try {
+				httpclient.close();
+			} catch (IOException e) {
+				httpclient = null;
+				throw new RuntimeException(e);
+			}
+		}
+		return resultBuffer.toString();
+	}
 	
 	public static void main(String[] args) throws KeyManagementException, NoSuchAlgorithmException {
 

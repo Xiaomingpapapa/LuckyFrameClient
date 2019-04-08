@@ -10,28 +10,28 @@ import java.sql.SQLException;
  * 为了尊重作者的劳动成果，LuckyFrame关键版权信息严禁篡改
  * 有任何疑问欢迎联系作者讨论。 QQ:1573584944  seagull1985
  * =================================================================
- * @ClassName: DBOperation 
+ * @ClassName: DBOperation
  * @Description: 封装自动化过程中，对数据库的部分操作
  * @author： seagull
  * @date 2014年8月24日 上午9:29:40  
- * 
+ *
  */
 public class DBOperation {
-		
+
 	DBToolkit dbt =null;
 	/**
 	 * 创建链接池，注意此方法不能new多次，会导致多次创建链接池，最好放在任务启动方法中
 	 */
 	public DBOperation(String urlBase,String usernameBase,String passwordBase) {
-	 dbt = new DBToolkit(urlBase,usernameBase,passwordBase);
+		dbt = new DBToolkit(urlBase,usernameBase,passwordBase);
 	}
-	
-	
+
+
 	/**
 	 * 执行SQL
 	 * @param request
 	 * @param response
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public String executeSql(String sql) throws Exception{
 		Connection conn = null;
@@ -51,12 +51,12 @@ public class DBOperation {
 			DBToolkit.closeConnection(conn);
 		}
 	}
-	
+
 	/**
 	 * 执行SQL流水查询
 	 * @param request
 	 * @param response
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public String executeQuery(String sql) throws Exception{
 		Connection conn = null;
@@ -66,16 +66,16 @@ public class DBOperation {
 			StringBuffer  sb = new StringBuffer();
 			rs = DBToolkit.executeQuery(conn, sql);
 			ResultSetMetaData metaData = rs.getMetaData();
-			int colum = metaData.getColumnCount(); 
+			int colum = metaData.getColumnCount();
 			int count=0;
 			//行数
-			while(rs.next()){    
+			while(rs.next()){
 				count++;
 				if (count > 1){
-				    sb.append("#");
-					}
+					sb.append("#");
+				}
 				//列数
-				for (int i = 1; i <= colum; i++){    
+				for (int i = 1; i <= colum; i++){
 					if(rs.getObject(metaData.getColumnName(i))== null){
 						sb.append("null").append("%");
 						continue;
@@ -96,58 +96,79 @@ public class DBOperation {
 				rs.close();
 			}
 			DBToolkit.closeConnection(conn);
-		}		
+		}
 	}
-	
-	
-    /**
-     * 
-     * @Title: subString 
-     * @Description: 截取字符串
-     * @return String 
-     * @throws
-     */
+
+
+	/**
+	 *
+	 * @Title: subString
+	 * @Description: 截取字符串
+	 * @return String
+	 * @throws
+	 */
 	public String subString(String str,String begin,String end){
 		try{
 			return str.substring(str.indexOf(begin)+begin.length(), str.lastIndexOf(end));
 		}
 		catch (Exception e) {
-            return null;
-        }
-	}
-	
-	
-    /**
-     * 
-     * @Title: sumString 
-     * @Description: 统计字符在字符串中出现的次数
-     * @return int
-     * @throws
-     */
-	public static int sumString(String str,String a){
-		        char chs[]=a.toCharArray();
-				int num = 0;
-				char[] chars = str.toCharArray();
-				for(int i = 0; i < chars.length; i++){
-				    if(chs[0] == chars[i])
-				    {
-				       num++;
-				    }
-				}
-				return num;
+			return null;
+		}
 	}
 
-	   /**
-	 * @throws InterruptedException 
-     * 
-     * @Title: Wait 
-     * @Description: 等待时间
-     * @return int
-     * @throws
-     */
+
+	/**
+	 *
+	 * @Title: sumString
+	 * @Description: 统计字符在字符串中出现的次数
+	 * @return int
+	 * @throws
+	 */
+	public static int sumString(String str,String a){
+		char chs[]=a.toCharArray();
+		int num = 0;
+		char[] chars = str.toCharArray();
+		for(int i = 0; i < chars.length; i++){
+			if(chs[0] == chars[i])
+			{
+				num++;
+			}
+		}
+		return num;
+	}
+
+	/**
+	 * @throws InterruptedException
+	 *
+	 * @Title: Wait
+	 * @Description: 等待时间
+	 * @return int
+	 * @throws
+	 */
 	public static void stepWait(String s) throws InterruptedException{
 		int second = Integer.parseInt(s);
 		Thread.sleep(second*1000);
 	}
-	
+
+
+
+	/**
+	 * 28476add
+	 * 执行InsertSql
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	public int executeInsertSql(String sql) throws Exception{
+		Connection conn = null;
+		try{
+			conn = dbt.getBaseConnection();
+			int resultnum = DBToolkit.executeInsertSQL(conn, sql);
+			return resultnum;
+		}catch(Exception e){
+			return -1;
+		}finally{
+			DBToolkit.closeConnection(conn);
+		}
+	}
 }

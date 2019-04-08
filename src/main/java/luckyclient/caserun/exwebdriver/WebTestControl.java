@@ -180,7 +180,7 @@ public class WebTestControl{
 		// TODO Auto-generated method stub
 		try {
 			PropertyConfigurator.configure(System.getProperty("user.dir")
-					+ "\\log4j.conf");
+					+ "\\log4j.properties");
 			//ManualExecutionPlan("automation test");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
