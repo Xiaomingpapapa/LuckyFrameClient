@@ -19,7 +19,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
  * @author seagull
  * @date 2018年7月27日 上午10:16:40
  */
-@SpringBootApplication()
+@SpringBootApplication
 public class RunService {
 
 	public static void main(String[] args) {

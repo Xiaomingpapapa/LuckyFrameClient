@@ -31,7 +31,7 @@ public class RunAutomationTest extends TestControl {
             Properties properties= luckyclient.publicclass.SysConfig.getConfiguration();
 			String taskid = args[0];
 			TestTaskexcute task = GetServerAPI.cgetTaskbyid(Integer.valueOf(taskid));
-
+            LogUtil.APP.info("Task Type is:" + task.getTestJob().getExtype());
             int taskType = task.getTestJob().getExtype();
             switch (taskType) {
                 case 0:
