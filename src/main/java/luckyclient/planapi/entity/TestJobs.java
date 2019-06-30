@@ -97,6 +97,16 @@ public class TestJobs implements java.io.Serializable {
 	//============新增字段============
 	private String testngFile;
 
+	/**
+	 * 脚本服务 baseUrl
+	 */
+	private String baseUrl;
+
+	/**
+	 * 脚本运行平台 0:android; 1:ios
+	 */
+	private Integer platformType;
+
 	public Integer getProjecttype() {
 		return projecttype;
 	}
@@ -399,4 +409,64 @@ public class TestJobs implements java.io.Serializable {
 	public void setSendCondition(Integer sendCondition) {
 		this.sendCondition = sendCondition;
 	}
+
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+
+	public Integer getPlatformType() {
+		return platformType;
+	}
+
+	public void setPlatformType(Integer platformType) {
+		this.platformType = platformType;
+	}
+
+//	@Override
+//	public String toString() {
+//		return "TestJobs{" +
+//				"id=" + id +
+//				", taskName='" + taskName + '\'' +
+//				", startDate='" + startDate + '\'' +
+//				", startTime='" + startTime + '\'' +
+//				", endDate='" + endDate + '\'' +
+//				", endTime='" + endTime + '\'' +
+//				", runTime='" + runTime + '\'' +
+//				", remark='" + remark + '\'' +
+//				", planproj='" + planproj + '\'' +
+//				", state='" + state + '\'' +
+//				", state_str='" + state_str + '\'' +
+//				", threadCount=" + threadCount +
+//				", time=" + time +
+//				", timeType='" + timeType + '\'' +
+//				", isSendMail='" + isSendMail + '\'' +
+//				", emailer='" + emailer + '\'' +
+//				", testlinkname='" + testlinkname + '\'' +
+//				", isbuilding='" + isbuilding + '\'' +
+//				", buildname='" + buildname + '\'' +
+//				", isrestart='" + isrestart + '\'' +
+//				", restartcomm='" + restartcomm + '\'' +
+//				", extype=" + extype +
+//				", browsertype=" + browsertype +
+//				", timeout=" + timeout +
+//				", clientip='" + clientip + '\'' +
+//				", projecttype=" + projecttype +
+//				", projectid=" + projectid +
+//				", planid=" + planid +
+//				", taskType='" + taskType + '\'' +
+//				", startTimestr='" + startTimestr + '\'' +
+//				", endTimestr='" + endTimestr + '\'' +
+//				", createTime='" + createTime + '\'' +
+//				", noEndDate='" + noEndDate + '\'' +
+//				", sendCondition=" + sendCondition +
+//				", testngFile='" + testngFile + '\'' +
+//				", baseUrl='" + baseUrl + '\'' +
+//				", platformType=" + platformType +
+//				", showRun=" + showRun +
+//				'}';
+//	}
 }

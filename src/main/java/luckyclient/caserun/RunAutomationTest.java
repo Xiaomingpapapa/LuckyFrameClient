@@ -3,6 +3,10 @@ package luckyclient.caserun;
 import java.io.File;
 import java.util.Properties;
 
+import feign.Feign;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
+import luckyclient.planapi.entity.TestJobs;
 import luckyclient.publicclass.LogUtil;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -11,6 +15,7 @@ import luckyclient.caserun.exinterface.TestControl;
 import luckyclient.caserun.exwebdriver.WebTestControl;
 import luckyclient.planapi.api.GetServerAPI;
 import luckyclient.planapi.entity.TestTaskexcute;
+import springboot.ScriptServer;
 
 /**
  * =================================================================
@@ -31,6 +36,8 @@ public class RunAutomationTest extends TestControl {
             Properties properties= luckyclient.publicclass.SysConfig.getConfiguration();
 			String taskid = args[0];
 			TestTaskexcute task = GetServerAPI.cgetTaskbyid(Integer.valueOf(taskid));
+//            System.out.println("client 查询到的 task 信息****" + task.toString());
+//            System.out.println("client 查询到的 job 信息****" + task.getTestJob().toString());
             LogUtil.APP.info("Task Type is:" + task.getTestJob().getExtype());
             int taskType = task.getTestJob().getExtype();
             switch (taskType) {
@@ -44,17 +51,22 @@ public class RunAutomationTest extends TestControl {
                     AppTestControl.taskExecutionPlan(taskid, task);
                     break;
                 case 3:
-                    try {
-                        Class  clzz = Class.forName(properties.getProperty("CustomControlFactory"));
-                        CustomControlFactory factory = (CustomControlFactory) clzz.newInstance();
-                        if(factory == null) {
-                            LogUtil.ERROR.error("factory not exitsts!");
-                            return;
-                        }
-                        factory.runControl(task);
-                    } catch (ClassNotFoundException e) {
-                        LogUtil.ERROR.error(e);
-                    }
+//                    try {
+//                        Class  clzz = Class.forName(properties.getProperty("CustomControlFactory"));
+//                        CustomControlFactory factory = (CustomControlFactory) clzz.newInstance();
+//                        if(factory == null) {
+//                            LogUtil.ERROR.error("factory not exitsts!");
+//                            return;
+//                        }
+//                        factory.runControl(task);
+//                    } catch (ClassNotFoundException e) {
+//                        LogUtil.ERROR.error(e);
+//                    }
+                    ScriptServer scriptServer = Feign.builder()
+                            .encoder(new JacksonEncoder())
+                            .decoder(new JacksonDecoder())
+                            .target(ScriptServer.class, "http://172.17.10.35:8090");
+                    scriptServer.runTask(task);
                     break;
                 case 4:
                     try {

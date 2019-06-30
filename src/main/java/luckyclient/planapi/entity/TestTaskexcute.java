@@ -212,4 +212,28 @@ public class TestTaskexcute implements java.io.Serializable {
 		this.createTime = createTime;
 	}
 
+//	@Override
+//	public String toString() {
+//		return "TestTaskexcute{" +
+//				"id=" + id +
+//				", taskId='" + taskId + '\'' +
+//				", casetotalCount=" + casetotalCount +
+//				", casesuccCount=" + casesuccCount +
+//				", casefailCount=" + casefailCount +
+//				", caselockCount=" + caselockCount +
+//				", casenoexecCount=" + casenoexecCount +
+//				", testJob=" + testJob +
+//				", jobid=" + jobid +
+//				", projectid=" + projectid +
+//				", caseIsExec='" + caseIsExec + '\'' +
+//				", finishtime='" + finishtime + '\'' +
+//				", taskStatus='" + taskStatus + '\'' +
+//				", startDate='" + startDate + '\'' +
+//				", endDate='" + endDate + '\'' +
+//				", name='" + name + '\'' +
+//				", taskName='" + taskName + '\'' +
+//				", taskStatus_str='" + taskStatus_str + '\'' +
+//				", createTime='" + createTime + '\'' +
+//				'}';
+//	}
 }

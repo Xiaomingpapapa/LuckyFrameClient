@@ -10,10 +10,10 @@ import java.util.Properties;
  */
 public class SysConfig {
 	private static final Properties SYS_CONFIG = new Properties();
-	private static final String SYS_CONFIG_FILE = "\\sys_config.properties";
+	private static final String SYS_CONFIG_FILE = "sys_config.properties";
 	static{
 		try {
-			SYS_CONFIG.load(new FileReader(System.getProperty("user.dir") + SYS_CONFIG_FILE));
+			SYS_CONFIG.load(new FileReader(System.getProperty("user.dir") + File.separator + SYS_CONFIG_FILE));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
