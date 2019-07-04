@@ -13,7 +13,7 @@ public class SysConfig {
 	private static final String SYS_CONFIG_FILE = "sys_config.properties";
 	static{
 		try {
-			SYS_CONFIG.load(new FileReader(System.getProperty("user.dir") + File.separator + SYS_CONFIG_FILE));
+			SYS_CONFIG.load(new InputStreamReader(SysConfig.class.getClassLoader().getResourceAsStream(SYS_CONFIG_FILE)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

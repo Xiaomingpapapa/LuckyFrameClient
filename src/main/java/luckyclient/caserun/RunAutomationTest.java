@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Properties;
 
 import feign.Feign;
+import feign.Retryer;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import luckyclient.planapi.entity.TestJobs;
@@ -63,6 +64,7 @@ public class RunAutomationTest extends TestControl {
 //                        LogUtil.ERROR.error(e);
 //                    }
                     ScriptServer scriptServer = Feign.builder()
+                            .retryer(Retryer.NEVER_RETRY)
                             .encoder(new JacksonEncoder())
                             .decoder(new JacksonDecoder())
                             .target(ScriptServer.class, "http://172.17.10.35:8090");
