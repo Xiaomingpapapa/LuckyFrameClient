@@ -52,22 +52,11 @@ public class RunAutomationTest extends TestControl {
                     AppTestControl.taskExecutionPlan(taskid, task);
                     break;
                 case 3:
-//                    try {
-//                        Class  clzz = Class.forName(properties.getProperty("CustomControlFactory"));
-//                        CustomControlFactory factory = (CustomControlFactory) clzz.newInstance();
-//                        if(factory == null) {
-//                            LogUtil.ERROR.error("factory not exitsts!");
-//                            return;
-//                        }
-//                        factory.runControl(task);
-//                    } catch (ClassNotFoundException e) {
-//                        LogUtil.ERROR.error(e);
-//                    }
                     ScriptServer scriptServer = Feign.builder()
                             .retryer(Retryer.NEVER_RETRY)
                             .encoder(new JacksonEncoder())
                             .decoder(new JacksonDecoder())
-                            .target(ScriptServer.class, "http://172.17.10.35:8090");
+                            .target(ScriptServer.class, "http://" + task.getTestJob().getBaseUrl());
                     scriptServer.runTask(task);
                     break;
                 case 4:
