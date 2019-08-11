@@ -1,5 +1,7 @@
 package luckyclient.publicclass;
 
+import org.springframework.core.io.ClassPathResource;
+
 import java.io.*;
 import java.util.Properties;
 
@@ -13,7 +15,7 @@ public class SysConfig {
 	private static final String SYS_CONFIG_FILE = "sys_config.properties";
 	static{
 		try {
-			SYS_CONFIG.load(new InputStreamReader(SysConfig.class.getClassLoader().getResourceAsStream(SYS_CONFIG_FILE)));
+			SYS_CONFIG.load(new InputStreamReader(new ClassPathResource(SYS_CONFIG_FILE).getInputStream()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

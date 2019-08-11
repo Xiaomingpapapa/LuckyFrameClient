@@ -9,6 +9,20 @@
 
 	<name>LuckyFrameClient</name>
 	<url>http://maven.apache.org</url>
+
+	<distributionManagement>
+		<repository>
+			<id>ehi_repository</id>
+			<name>ehi_repository</name>
+			<url>http://192.168.9.230:8081/repository/app-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>ehi_repository_snapshot</id>
+			<name>ehi_repository_snapshot</name>
+			<url>http://192.168.9.230:8081/repository/app-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<build>
 		<finalName>luckyframe-client</finalName>
 		<plugins>
